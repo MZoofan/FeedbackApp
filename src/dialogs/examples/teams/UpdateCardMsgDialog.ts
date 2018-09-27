@@ -11,24 +11,41 @@ export class UpdateCardMsgDialog extends TriggerActionDialog {
     private static async updateCardMessage(session: builder.Session, args?: any | builder.IDialogResult<any>, next?: (args?: builder.IDialogResult<any>) => void): Promise<void> {
         if (session.message.replyToId)
         {
+            console.log(session);
+            
+            let userId = session.message.user.id;
             let updateCardCounter = session.message.value.updateCounterKey;
+            let usersVoted =  session.message.value.usersVoted
+            
+             if (!usersVoted.includes(userId))
+             {
             let messageBackButtonValue = JSON.stringify({ updateCounterKey: ++updateCardCounter });
 
             let messageBackButton = builder.CardAction.messageBack(session, messageBackButtonValue)
-                .displayText(Strings.messageBack_button_display_text)
-                .title(Strings.update_card_button)
+               // .displayText(Strings.messageBack_button_display_text, name )
+                .title("Like")
                 .text("update card message"); // This must be a string that routes to UpdateCardMsgDialog, which handles card updates
 
-            let newCard = new builder.HeroCard(session)
-                .title(Strings.updated_card_title, updateCardCounter)
-                .subtitle(Strings.updated_card_subtitle)
-                .text(Strings.default_text)
-                .images([
-                    new builder.CardImage(session)
-                        .url(config.get("app.baseUri") + "/assets/computer_person.jpg")
-                        .alt(session.gettext(Strings.img_default)),
-                    ])
-                .buttons([messageBackButton]);
+            // let newCard = new builder.HeroCard(session)
+            //     .title(Strings.updated_card_title, updateCardCounter)
+            //     .subtitle(Strings.updated_card_subtitle)
+            //     .text(Strings.default_text)
+            //     .images([
+            //         new builder.CardImage(session)
+            //             .url(config.get("app.baseUri") + "/assets/computer_person.jpg")
+            //             .alt(session.gettext(Strings.img_default)),
+            //         ])
+            //     .buttons([messageBackButton]);
+
+                let newCard = new builder.ThumbnailCard(session)
+            
+             
+                  .subtitle(Strings.updated_card_title, updateCardCounter)
+                   .text("<em>Click the like button to add more kudos</em>")
+             
+                
+            //   .buttons(buttons)
+        .buttons([messageBackButton]);
 
             let addressOfMessageToUpdate = { ...session.message.address, id: session.message.replyToId };
 
@@ -38,16 +55,17 @@ export class UpdateCardMsgDialog extends TriggerActionDialog {
 
             session.connector.update(msg.toMessage(), (err, address) => {
                 if (!err) {
-                    session.send(Strings.updated_msg_confirmation);
+                   // session.send(Strings.updated_msg_confirmation);
                 } else {
                     session.send(Strings.update_card_error + err.message);
                 }
                 session.endDialog();
             });
         }
+        }
         else
         {
-            session.send(Strings.no_msg_to_update);
+         //   session.send(Strings.no_msg_to_update);
             session.endDialog();
         }
     }

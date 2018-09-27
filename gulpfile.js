@@ -25,9 +25,9 @@ var tsProject = ts.createProject('./tsconfig.json', {
     typescript: require('typescript'),
 });
 
-var filesToWatch = [];
+var filesToWatch = ['**/*.ts', '!node_modules/**'];
 var filesToLint =  [];
-var staticFiles =  [];
+var staticFiles =  ['src/**/*.json', 'src/**/*.hbs'];
 
 /**
  * Clean build output.
